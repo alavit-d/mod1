@@ -113,7 +113,7 @@ var quality = 16, step = 1024 / quality;
 					geometry.vertices[ i ].y = data[ ( x * step ) + ( y * step ) * 1024 ] * 2 - 128;
 
 				}
-				var material = new THREE.MeshBasicMaterial( {side: THREE.DoubleSide, map: texture} ); 
+				var material = new THREE.MeshBasicMaterial( {side: THREE.DoubleSide} ); 
 				var plane = new THREE.Mesh(geometry, material);
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
