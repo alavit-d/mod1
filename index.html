@@ -92,10 +92,11 @@
 				}
 				return data;
 			}
-	var data = generateHeight( 1024, 1024 );
+			var data = generateHeight( 1024, 1024 );
+			var texture = THREE.ImageUtils.loadTexture( "textures/greenbark.jpg" );
 			var scene = new THREE.Scene();
 			var camera = new THREE.PerspectiveCamera( 60, window.innerWidth/window.innerHeight, 1, 10000 );
-
+			
 			var renderer = new THREE.WebGLRenderer();
 			renderer.setSize( window.innerWidth, window.innerHeight );
 			document.body.appendChild( renderer.domElement );
@@ -112,7 +113,7 @@ var quality = 16, step = 1024 / quality;
 					geometry.vertices[ i ].y = data[ ( x * step ) + ( y * step ) * 1024 ] * 2 - 128;
 
 				}
-				var material = new THREE.MeshBasicMaterial( {color: 0xbfd1e5 , side: THREE.DoubleSide} ); 
+				var material = new THREE.MeshBasicMaterial( {side: THREE.DoubleSide, map: texture} ); 
 				var plane = new THREE.Mesh(geometry, material);
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
