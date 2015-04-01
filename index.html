@@ -97,20 +97,19 @@
 				for (var i = 0; i < width * width; i++) {
 						var x = i % width, y =  Math.floor(i / width);
 						tmp = Math.pow(300, 2) - (Math.pow(x - x1, 2) + Math.pow(y - y1, 2));
-						data[i] += (tmp > 0 ? Math.floor(tmp / 1000) : 0);
+						data[i] += (tmp > 0 ? Math.floor(tmp/1000) : 0);
 					}
 			}
 
 			var scene = new THREE.Scene();
 			//Generate ground
-			var data = new Uint8Array(1024 * 1024, 0);
-	//		var data = generateHeight( 1024, 1024 );
+			var data = new Uint32Array(1024 * 1024, 0);
+			//var data = generateHeight( 1024, 1024 );
 			generateHill(data, 1024, 564, 564);
 			generateHill(data, 1024, 800, 100);
 			generateHill(data, 1024, 0, 100);
 			//var texture = THREE.ImageUtils.loadTexture( "textures/greenbark.jpg" );
 	
-			var geometry = new THREE.PlaneGeometry(1024, 1024);
 			var quality = 32, step = 1024 / quality;
 			var geometry = new THREE.PlaneGeometry( 1024, 1024, quality - 1, quality - 1);
 			for (var i = 0, l = geometry.vertices.length; i < l; i++) {
@@ -118,14 +117,22 @@
 				geometry.vertices[i].z = -data[ ( x * step ) + ( y * step ) * 1024];
 			}
 			geometry.applyMatrix( new THREE.Matrix4().makeRotationX(  Math.PI / 2 ) );
-			var material = new THREE.MeshDepthMaterial( {side: THREE.DoubleSide, wireframe: true} ); 
-			var plane = new THREE.Mesh(geometry, material);
-			scene.add( plane );	
+			var material = new THREE.MeshDepthMaterial( {wireframe: true} ); 
+			var ground = new THREE.Mesh(geometry, material);
+			scene.add( ground );
+			var waterHeight = new THREE.PlaneGeometry(1024, 1024, quality - 1, quality - 1);
+			for (var i = 0, l = waterHeight.vertices.length; i < l; i++) {
+				waterHeight.vertices[i].z = -50;
+			}
+			waterHeight.applyMatrix( new THREE.Matrix4().makeRotationX(  Math.PI / 2 ) );
+			var waterMat = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+			var water = new THREE.Mesh(waterHeight, waterMat);
+			scene.add( water );	
 	//Generate camera
 			var camera = new THREE.PerspectiveCamera( 60, window.innerWidth/window.innerHeight, 1, 10000 );
-			camera.position.x = 500;
-			camera.position.z = 500;
-			camera.position.y = 500;
+			camera.position.x = 700;
+			camera.position.z = 700;
+			camera.position.y = 700;
 			camera.lookAt(new THREE.Vector3(0, 0, 0));
 	//Print scene
 			var renderer = new THREE.WebGLRenderer();
