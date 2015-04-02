@@ -74,7 +74,7 @@ function generateHeight( width, height ) {
 		quality *= 4;
 		for ( var i = 0; i < size; i ++ ) {
 			var x = i % width, y = ~~ ( i / width );
-			ground[ i ] += Math.abs( perlin.noise( x / quality, y / quality, z ) * 0.5 ) * quality + 10;
+			ground[ i ] += Math.abs( perlin.noise( x / quality, y / quality, z ) * 0.1 ) * quality + 10;
 		}
 	}
 	return ground;
