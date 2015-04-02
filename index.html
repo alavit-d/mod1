@@ -2,12 +2,26 @@
 <html>
 	<head>
 		<title>mod1</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 		<style>
 			body { margin: 0;i overflow:hidden; }
 			canvas { display: block; }
+			console {position: fixed; margin: 50px; z-index: 1;}
 		</style>
 	</head>
 	<body>
+		<console>
+		<form class="form-inline">
+			<select class="form-control">
+ 				<option>1</option>
+ 				<option>2</option>
+  				<option>3</option>
+  				<option>4</option>
+	  			<option>0</option>
+			</select>	
+			<button class="btn btn-default" type="submit" id="generate">Generate New Map</button>
+		</form>
+		</console>
 	</body>
 	<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r70/three.js"></script>
@@ -37,7 +51,7 @@
 				waterHeight.vertices[i].z = 100;
 			}
 			waterHeight.applyMatrix( new THREE.Matrix4().makeRotationX(  - Math.PI / 2 ) );
-			var waterMat = new THREE.MeshBasicMaterial( { color: 0x297ACC, map: waterTexture } );
+			var waterMat = new THREE.MeshBasicMaterial( { map: waterTexture } );
 			var water = new THREE.Mesh(waterHeight, waterMat);
 			scene.add( water );
 
@@ -58,7 +72,7 @@
 			document.body.appendChild( renderer.domElement );
 			var render = function() {
 				requestAnimationFrame( render );
-				//controls.update();
+				controls.update();
 				renderer.render(scene, camera);
 			}
 			$(window).load(function () {
