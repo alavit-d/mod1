@@ -10,6 +10,7 @@
 	<body>
 	</body>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r70/three.js"></script>
+	<script src="./water.js"></script>
 	<script>
 		var ImprovedNoise = function () {
 
@@ -81,53 +82,56 @@
 	}
 }
 	function generateHeight( width, height ) {
-				var data = new Uint8Array( width * height ), perlin = new ImprovedNoise(),
+				var ground = new Uint8Array( width * height ), perlin = new ImprovedNoise(),
 				size = width * height, quality = 2, z = Math.random() * 100;
 				for ( var j = 0; j < 4; j ++ ) {
 					quality *= 4;
 					for ( var i = 0; i < size; i ++ ) {
 						var x = i % width, y = ~~ ( i / width );
-						data[ i ] += Math.abs( perlin.noise( x / quality, y / quality, z ) * 0.5 ) * quality + 10;
+						ground[ i ] += Math.abs( perlin.noise( x / quality, y / quality, z ) * 0.5 ) * quality + 10;
 					}
 				}
-				return data;
+				return ground;
 			}
 
-			function generateHill(data, width, x1, y1) {
+			function generateHill(ground, width, x1, y1, r) {
 				for (var i = 0; i < width * width; i++) {
 						var x = i % width, y =  Math.floor(i / width);
-						tmp = Math.pow(300, 2) - (Math.pow(x - x1, 2) + Math.pow(y - y1, 2));
-						data[i] += (tmp > 0 ? Math.floor(tmp/1000) : 0);
+						tmp = Math.pow(r, 2) - (Math.pow(x - x1, 2) + Math.pow(y - y1, 2));
+						ground[i] += (tmp > 0 ? Math.floor(tmp/1000) : 0);
 					}
 			}
-
 			var scene = new THREE.Scene();
 			//Generate ground
-			var data = new Uint32Array(1024 * 1024, 0);
-			//var data = generateHeight( 1024, 1024 );
-			generateHill(data, 1024, 564, 564);
-			generateHill(data, 1024, 800, 100);
-			generateHill(data, 1024, 0, 100);
-			//var texture = THREE.ImageUtils.loadTexture( "textures/greenbark.jpg" );
-	
+			var ground = new Float64Array(1024 * 1024, 0);
+			//var ground = generateHeight( 1024, 1024 );
+			generateHill(ground, 1024, 564, 564, 400);
+			generateHill(ground, 1024, 800, 100, 300);
+			generateHill(ground, 1024, 0, 100, 300);
+			for (var i = 0; i < 10; i++)
+				fluid(ground, water);
+			for (var i = 0; i < ground.length; i++)
+				ground[i] += water[i];
+			var texture = THREE.ImageUtils.loadTexture( "textures/greenbark.jpg" );
 			var quality = 32, step = 1024 / quality;
 			var geometry = new THREE.PlaneGeometry( 1024, 1024, quality - 1, quality - 1);
 			for (var i = 0, l = geometry.vertices.length; i < l; i++) {
 				var x = i % quality, y = Math.floor( i / quality );
-				geometry.vertices[i].z = -data[ ( x * step ) + ( y * step ) * 1024];
+				geometry.vertices[i].z = -ground[ ( x * step ) + ( y * step ) * 1024];
 			}
 			geometry.applyMatrix( new THREE.Matrix4().makeRotationX(  Math.PI / 2 ) );
-			var material = new THREE.MeshDepthMaterial( {wireframe: true} ); 
+			//var material = new THREE.MeshDepthMaterial( {wireframe: true} ); 
+			var material = THREE.MeshBasicMaterial( {map: texture} );
 			var ground = new THREE.Mesh(geometry, material);
 			scene.add( ground );
-			var waterHeight = new THREE.PlaneGeometry(1024, 1024, quality - 1, quality - 1);
+			/*var waterHeight = new THREE.PlaneGeometry(1024, 1024, quality - 1, quality - 1);
 			for (var i = 0, l = waterHeight.vertices.length; i < l; i++) {
 				waterHeight.vertices[i].z = -50;
 			}
 			waterHeight.applyMatrix( new THREE.Matrix4().makeRotationX(  Math.PI / 2 ) );
 			var waterMat = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
 			var water = new THREE.Mesh(waterHeight, waterMat);
-			scene.add( water );	
+			scene.add( water );	*/
 	//Generate camera
 			var camera = new THREE.PerspectiveCamera( 60, window.innerWidth/window.innerHeight, 1, 10000 );
 			camera.position.x = 700;
