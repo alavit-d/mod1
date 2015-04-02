@@ -1,5 +1,4 @@
 var water = new Float64Array(1024 * 1024);
-var width = 1024;
 
 for (var i = 0; i < water.length; i++)
 	water[i] = 60;
