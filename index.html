@@ -21,30 +21,31 @@
 			//for (var i = 0; i < ground.length; i++)
 			//	ground[i] += water[i];
 			var texture = THREE.ImageUtils.loadTexture("textures/greenbark.jpg");
+			var waterTexture = THREE.ImageUtils.loadTexture("textures/water.jpg");
 			var quality = 32, step = 1024 / quality;
 			var geometry = new THREE.PlaneGeometry( 1024, 1024, quality - 1, quality - 1);
 			for (var i = 0, l = geometry.vertices.length; i < l; i++) {
 				var x = i % quality, y = Math.floor( i / quality );
-				geometry.vertices[i].z = -ground[ ( x * step ) + ( y * step ) * 1024];
+				geometry.vertices[i].z = ground[ ( x * step ) + ( y * step ) * 1024];
 			}
-			geometry.applyMatrix( new THREE.Matrix4().makeRotationX(  Math.PI / 2 ) );
+			geometry.applyMatrix( new THREE.Matrix4().makeRotationX(  - Math.PI / 2 ) );
 			var material = new THREE.MeshBasicMaterial( {map: texture, side:THREE.DoubleSide } ); 
 			var ground = new THREE.Mesh(geometry, material);
 			scene.add( ground );
-			/*var waterHeight = new THREE.PlaneGeometry(1024, 1024, quality - 1, quality - 1);
+			var waterHeight = new THREE.PlaneGeometry(1024, 1024, quality - 1, quality - 1);
 			for (var i = 0, l = waterHeight.vertices.length; i < l; i++) {
-				waterHeight.vertices[i].z = -50;
+				waterHeight.vertices[i].z = 100;
 			}
-			waterHeight.applyMatrix( new THREE.Matrix4().makeRotationX(  Math.PI / 2 ) );
-			var waterMat = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+			waterHeight.applyMatrix( new THREE.Matrix4().makeRotationX(  - Math.PI / 2 ) );
+			var waterMat = new THREE.MeshBasicMaterial( { color: 0x297ACC, map: waterTexture } );
 			var water = new THREE.Mesh(waterHeight, waterMat);
-			scene.add( water );	*/
+			scene.add( water );
 
 	//Generate camera
 			var camera = new THREE.PerspectiveCamera( 60, window.innerWidth/window.innerHeight, 1, 10000 );
 			camera.position.x = 700;
-			camera.position.z = 700;
 			camera.position.y = 700;
+			camera.position.z = 700;
 			camera.lookAt(new THREE.Vector3(0, 0, 0));
 			var controls = new THREE.OrbitControls( camera );
 			//controls.addEventListener( 'change', render );
