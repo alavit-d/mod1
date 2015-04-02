@@ -112,7 +112,7 @@
 				fluid(ground, water);
 			for (var i = 0; i < ground.length; i++)
 				ground[i] += water[i];
-			var texture = THREE.ImageUtils.loadTexture( "textures/greenbark.jpg" );
+			//var texture = THREE.ImageUtils.loadTexture( "textures/greenbark.jpg" );
 			var quality = 32, step = 1024 / quality;
 			var geometry = new THREE.PlaneGeometry( 1024, 1024, quality - 1, quality - 1);
 			for (var i = 0, l = geometry.vertices.length; i < l; i++) {
@@ -120,8 +120,8 @@
 				geometry.vertices[i].z = -ground[ ( x * step ) + ( y * step ) * 1024];
 			}
 			geometry.applyMatrix( new THREE.Matrix4().makeRotationX(  Math.PI / 2 ) );
-			//var material = new THREE.MeshDepthMaterial( {wireframe: true} ); 
-			var material = THREE.MeshBasicMaterial( {map: texture} );
+			var material = new THREE.MeshDepthMaterial( {wireframe: true} ); 
+			//var material = THREE.MeshBasicMaterial( {map: texture} );
 			var ground = new THREE.Mesh(geometry, material);
 			scene.add( ground );
 			/*var waterHeight = new THREE.PlaneGeometry(1024, 1024, quality - 1, quality - 1);
