@@ -57,7 +57,6 @@
         var soil;
         function updateSoil() {
             var quality = 32, step = 1024 / quality;
-            console.log('qual, ' + quality + ' step' +  step);
 			var geometry = new THREE.PlaneGeometry( 1024, 1024, quality - 1, quality - 1);
 			for (var i = 0, l = geometry.vertices.length; i < l; i++) {
 				var x = i % quality, y = Math.floor( i / quality );
@@ -66,12 +65,13 @@
             geometry.applyMatrix( new THREE.Matrix4().makeRotationX(  - Math.PI / 2 ) );
             geometry.computeFaceNormals();
             geometry.computeVertexNormals();
-			var material = new THREE.MeshBasicMaterial( {map: texture, side:THREE.DoubleSide } ); 
-            scene.remove( soil );
+			var material = new THREE.MeshBasicMaterial( {map: texture, side:THREE.DoubleSide } );
+            //scene.remove( soil );
 			var soil = new THREE.Mesh(geometry, material);
 			scene.add( soil );
+            return soil;
         }
-        updateSoil();
+        soil = updateSoil();
 			var waterHeight = new THREE.PlaneGeometry(1024, 1024, quality - 1, quality - 1);
 			for (var i = 0, l = waterHeight.vertices.length; i < l; i++) {
 				waterHeight.vertices[i].z = 100;
@@ -105,10 +105,11 @@
                 var r = $("#height").val();
                 var x = $("#x-pos").val();
                 var y = $("#y-pos").val();
-                if (r && x && y) {
+                if (r) {
                     operationList.push({gen: generateHill, arg: [x, y, r]});
                     ground = generateGround(1024, operationList);
-                    updateSoil();
+                    scene.remove( soil );
+                    soil = updateSoil();
                 }
         }
         $("#noise").click(function() {
