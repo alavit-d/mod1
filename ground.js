@@ -67,9 +67,9 @@ function fade(t) {
 	}
 }
 
-function generateHeight( width, height, coef ) {
+function generateNoise( ground, width, coef, no1, no2 ) {
 	perlin = new ImprovedNoise(),
-	size = width * height, quality = 2, z = Math.random() * 100;
+	size = width * width, quality = 2, z = Math.random() * 100;
 	for ( var j = 0; j < 4; j ++ ) {
 		quality *= 4;
 		for ( var i = 0; i < size; i ++ ) {
@@ -86,20 +86,14 @@ function generateHill(ground, width, x1, y1, r) {
 		tmp = Math.pow(r, 2) - (Math.pow(x - x1, 2) + Math.pow(y - y1, 2));
 		ground[i] += (tmp > 0 ? Math.floor(tmp/1000) : 0);
 	}
+    return ground;
 }
 
-var width = 1024;
 
-function generateGround() {
+function generateGround(width) {
     var tmp = new Float64Array(width * width, 0);
-    tmp = generateHeight( 1024, 1024, 0,1);
-    generateHill(tmp, 1024, 564, 564, 400);
-    generateHill(tmp, 1024, 800, 100, 300);
-    generateHill(tmp, 1024, 0, 100, 300);
+    for(var i = 0; i < operationList.length; i++) {
+        tmp = operationList[i].gen(tmp, width, operationList[i].arg[0], operationList[i].arg[1], operationList[i].arg[2]);
+    }
     return tmp;
 }
-    var ground = new Float64Array(width * width, 0);
-    ground = generateHeight( 1024, 1024, 0,1);
-    generateHill(ground, 1024, 564, 564, 400);
-    generateHill(ground, 1024, 800, 100, 300);
-    generateHill(ground, 1024, 0, 100, 300);

@@ -46,6 +46,13 @@
 			var texture = THREE.ImageUtils.loadTexture("textures/greenbark.jpg");
             texture.minFilter = texture.magFilter = THREE.NearestFilter;
             texture.needsUpdate = true;
+        var operationList = [
+    {gen: generateNoise, arg: [0.1, 0, 0]},
+    {gen: generateHill, arg: [564, 564, 400]},
+    {gen: generateHill, arg: [800, 100, 300]},
+    {gen: generateHill, arg: [0, 100, 300]}
+];
+        var ground = generateGround(1024);
 			var quality = 32, step = 1024 / quality;
 			var geometry = new THREE.PlaneGeometry( 1024, 1024, quality - 1, quality - 1);
 			for (var i = 0, l = geometry.vertices.length; i < l; i++) {
@@ -71,37 +78,28 @@
 	//Generate camera
 			var camera = new THREE.PerspectiveCamera( 60, window.innerWidth/window.innerHeight, 1, 10000 );
             camera.position.set(1000, 1000, 1000);
-			var controls = new THREE.OrbitControls( camera );
-			//controls.addEventListener( 'change', render );
 	//Print scene
 			var renderer = new THREE.WebGLRenderer();
 			renderer.setPixelRatio( window.devicePixelRatio );
 			renderer.setSize( window.innerWidth, window.innerHeight );
 			renderer.setClearColor(0xFFFFFF, 1); 
+			controls = new THREE.OrbitControls( camera, renderer.domElement );
+			controls.addEventListener( 'change', render );
 			document.body.appendChild( renderer.domElement );
 			var render = function() {
 				requestAnimationFrame( render );
                 soil.geometry.verticesNeedUpdate = true;
-                controls.update();
 				renderer.render(scene, camera);
 			}
             render();
              var x = 0;
-        function nope() {};
         function genHill() {
                 var r = $("#height").val();
                 var x = $("#x-pos").val();
                 var y = $("#y-pos").val();
                 if (r && x && y) {
-                    ground = generateGround();
-                    generateHill(ground, width, x, y, r);
-                    for (var i = 0, l = soil.geometry.vertices.length; i < l; i++) {
-                        var x = i % quality, y = Math.floor( i / quality );
-                        soil.geometry.vertices[i].z = ground[ ( x * step ) + ( y * step ) * 1024];
-                     }
-                    //if (x == 0)
-                    soil.geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - 0.5 *  Math.PI) );
-                    x++;
+                    operationList.push({gen: generateHill, arg: [x, y, r]});
+                    updateGround()
                 }
         }
         $("#noise").click(function() {
