@@ -31,9 +31,9 @@
         var info = document.body.appendChild( document.createElement( 'div' ) );
 		info.style.cssText = 'margin: 20px; position: absolute; ';
 		info.innerHTML = '<a href="" ><h1>' + document.title + '</h1></a>' +
-			'<p>Height:<br><input type=range id=height min=0 max=500 step=1 value=0 onmouseenter=nope /></p>' +
-			'<p>X pos:<br><input type=range id=x-pos min=0 max=1024 step=1 value=0 /></p>' +
-			'<p>Y pos:<br><input type=range id=y-pos min=0 max=1024 step=1 value=0 /></p>' +
+			'<p>Height:<br><input type=range id=height min=0 max=500 step=10 value=0 /></p>' +
+			'<p>X pos:<br><input type=range id=x-pos min=0 max=1024 step=10 value=0 /></p>' +
+			'<p>Y pos:<br><input type=range id=y-pos min=0 max=1024 step=10 value=0 /></p>' +
             '<button class="btn btn-default" type="button" id="generateHill" onclick="genHill()">Generate New Hill</button>'
 			'<div id=msg ></div>' +
 		'';
@@ -52,17 +52,26 @@
     {gen: generateHill, arg: [800, 100, 300]},
     {gen: generateHill, arg: [0, 100, 300]}
 ];
-        var ground = generateGround(1024);
-			var quality = 32, step = 1024 / quality;
+		var quality = 32, step = 1024 / quality;
+        var ground = generateGround(1024, operationList);
+        var soil;
+        function updateSoil() {
+            var quality = 32, step = 1024 / quality;
+            console.log('qual, ' + quality + ' step' +  step);
 			var geometry = new THREE.PlaneGeometry( 1024, 1024, quality - 1, quality - 1);
 			for (var i = 0, l = geometry.vertices.length; i < l; i++) {
 				var x = i % quality, y = Math.floor( i / quality );
 				geometry.vertices[i].z = ground[ ( x * step ) + ( y * step ) * 1024];
             }
             geometry.applyMatrix( new THREE.Matrix4().makeRotationX(  - Math.PI / 2 ) );
+            geometry.computeFaceNormals();
+            geometry.computeVertexNormals();
 			var material = new THREE.MeshBasicMaterial( {map: texture, side:THREE.DoubleSide } ); 
+            scene.remove( soil );
 			var soil = new THREE.Mesh(geometry, material);
 			scene.add( soil );
+        }
+        updateSoil();
 			var waterHeight = new THREE.PlaneGeometry(1024, 1024, quality - 1, quality - 1);
 			for (var i = 0, l = waterHeight.vertices.length; i < l; i++) {
 				waterHeight.vertices[i].z = 100;
@@ -88,7 +97,6 @@
 			document.body.appendChild( renderer.domElement );
 			var render = function() {
 				requestAnimationFrame( render );
-                soil.geometry.verticesNeedUpdate = true;
 				renderer.render(scene, camera);
 			}
             render();
@@ -99,7 +107,8 @@
                 var y = $("#y-pos").val();
                 if (r && x && y) {
                     operationList.push({gen: generateHill, arg: [x, y, r]});
-                    updateGround()
+                    ground = generateGround(1024, operationList);
+                    updateSoil();
                 }
         }
         $("#noise").click(function() {

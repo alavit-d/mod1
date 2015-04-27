@@ -77,7 +77,7 @@ function generateNoise( ground, width, coef, no1, no2 ) {
 			ground[ i ] += Math.abs( perlin.noise( x / quality, y / quality, z ) * coef ) * quality + 10;
 		}
 	}
-	return ground;
+	//return ground;
 }
 
 function generateHill(ground, width, x1, y1, r) {
@@ -86,14 +86,14 @@ function generateHill(ground, width, x1, y1, r) {
 		tmp = Math.pow(r, 2) - (Math.pow(x - x1, 2) + Math.pow(y - y1, 2));
 		ground[i] += (tmp > 0 ? Math.floor(tmp/1000) : 0);
 	}
-    return ground;
+    //return ground;
 }
 
 
-function generateGround(width) {
-    var tmp = new Float64Array(width * width, 0);
+function generateGround(width, operationList) {
+    var ground = new Float64Array(width * width, 0);
     for(var i = 0; i < operationList.length; i++) {
-        tmp = operationList[i].gen(tmp, width, operationList[i].arg[0], operationList[i].arg[1], operationList[i].arg[2]);
+        operationList[i].gen(ground, width, operationList[i].arg[0], operationList[i].arg[1], operationList[i].arg[2]);
     }
-    return tmp;
+    return ground;
 }
