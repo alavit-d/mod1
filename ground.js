@@ -97,3 +97,13 @@ function generateGround(width, operationList) {
     }
     return ground;
 }
+
+//define globals here 
+var width = 1024;
+var operationList = [
+    {gen: generateNoise, arg: [0.1, 0, 0]},
+    {gen: generateHill, arg: [564, 564, 400]},
+    {gen: generateHill, arg: [800, 100, 300]},
+    {gen: generateHill, arg: [0, 100, 300]}
+];
+var ground = generateGround(width, operationList);

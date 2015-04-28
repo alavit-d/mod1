@@ -38,21 +38,10 @@
 	<script>
 			var scene = new THREE.Scene();
             THREE.ImageUtils.crossOrigin = 'anonymous';
-			//for (var i = 0; i < 100; i++) 
-			//	fluid(ground, water);
-			//for (var i = 0; i < ground.length; i++)
-			//	ground[i] += water[i];
 			var texture = THREE.ImageUtils.loadTexture("textures/greenbark.jpg");
             texture.minFilter = texture.magFilter = THREE.NearestFilter;
             texture.needsUpdate = true;
-        var operationList = [
-    {gen: generateNoise, arg: [0.1, 0, 0]},
-    {gen: generateHill, arg: [564, 564, 400]},
-    {gen: generateHill, arg: [800, 100, 300]},
-    {gen: generateHill, arg: [0, 100, 300]}
-];
 		var quality = 32, step = 1024 / quality;
-        var ground = generateGround(1024, operationList);
         var soil;
         function updateSoil() {
             var quality = 32, step = 1024 / quality;
@@ -71,13 +60,15 @@
             return soil;
         }
         soil = updateSoil();
+			//for (var i = 0; i < 20; i++) 
+			//	fluid();
 			var waterHeight = new THREE.PlaneGeometry(1024, 1024, quality - 1, quality - 1);
 			for (var i = 0, l = waterHeight.vertices.length; i < l; i++) {
-				waterHeight.vertices[i].z = 100;
+                var x = i % quality, y = Math.floor( i / quality );
+				waterHeight.vertices[i].z = waterNew[( x * step ) + ( y * step ) * 1024] + ground[( x * step ) + ( y * step ) * 1024] - 0.5;
 			}
 			waterHeight.applyMatrix( new THREE.Matrix4().makeRotationX(  - Math.PI / 2 ) );
-			//var waterMat = new THREE.MeshBasicMaterial( { map: waterTexture } );
-            var waterMat = new THREE.MeshBasicMaterial( { opacity: 0.5, side: 2, transparent: true } );
+            var waterMat = new THREE.MeshBasicMaterial( { color: 0x7094FF, opacity: 0.5, side: 2, transparent: true } );
 			var water = new THREE.Mesh(waterHeight, waterMat);
 			scene.add( water );
         var axisHelper = new THREE.AxisHelper( 50 );

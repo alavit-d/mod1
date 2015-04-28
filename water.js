@@ -1,21 +1,23 @@
-var water = new Float64Array(1024 * 1024);
-
-for (var i = 0; i < water.length; i++)
-	water[i] = 60;
+var waterOld = new Float64Array(width * width);
+var waterNew = new Float64Array(width * width);
+for (var i = 0; i < width; i++)
+	waterOld[i] = 500.0;
 
 function	height(i) {
-	if (0 <= i && i < ground.length)
-		return ground[i] + water[i];
-	return 10000000;
+    return (ground[i] + waterOld[i]);
 }
 
 function	nbrFlow(i) {
 	var	n = 0;
-	if (water[i] > 0) {
-		n += (height(i) > height(i + 1) ? 1 : 0);
-		n += (height(i) > height(i - 1) ? 1 : 0);
-		n += (height(i) > height(i - width) ? 1 : 0);
-		n += (height(i) > height(i + width) ? 1 : 0);
+	if (waterOld[i] > 0) {
+        if (i % width == (i + 1) % width)
+		  n += (height(i) > height(i + 1) ? 1 : 0);
+        if (i % width == (i - 1) % width)
+            n += (height(i) > height(i - 1) ? 1 : 0);
+        if (i - width >= 0)
+		  n += (height(i) > height(i - width) ? 1 : 0);
+        if (i + width < ground.length)
+		  n += (height(i) > height(i + width) ? 1 : 0);
 	}
 	return n;
 }
@@ -23,12 +25,13 @@ function	nbrFlow(i) {
 function	moveWater(a, b, n) {
 	if (height(a) > height(b)) {
 		var vol = (height(a) - height(b)) / (n * 2);
-		water[a] -= vol;
-		water[b] += vol;
+			waterNew[a] -= vol;
+			waterNew[b] += vol;
 	}
 }
 
-function	fluid(ground, water) {
+function	fluid() {
+	waterNew = waterOld;
 	for (var i = 0; i < ground.length; i++) {
 		var n = nbrFlow(i);
 		if (n != 0) {
@@ -38,4 +41,16 @@ function	fluid(ground, water) {
 			moveWater(i, i - width, n);
 		}
 	}
+    waterOld = waterNew;
+}
+
+function printW() {
+    console.log('State: ');
+    for (var i = 0; i < width; i++) {
+        var str = '';
+        for (var j = 0; j < width; j++) {
+            str += ' ' + Math.floor(waterOld[i * width + j]);
+        }
+        console.log(str);
+    }
 }
